@@ -1,9 +1,10 @@
 # Training Center Management System
 
 ## Overview
-A RESTful backend API for managing a training center, including students, instructors, courses, and enrollments.
+A RESTful backend API for managing a training center, including users, students, instructors, courses, and enrollments.
 
 ## Planned Features
+- User management
 - Student and instructor management
 - Course management and instructor assignments
 - Student course enrollment
@@ -24,7 +25,7 @@ The initial database design includes the ERD and relational schema.
 - [Relational Schema](docs/database/RS.png)
 
 ## Project Status
-**Status:** Database design completed; implementation not started.
+**Status:** Database design and implementation completed; Coding not started.
 
 ## Future Documentation
 Setup instructions, API endpoints, authentication details, and usage examples will be added as development progresses.
