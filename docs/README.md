@@ -21,8 +21,8 @@ A RESTful backend API for managing a training center, including users, students,
 ## Database Design
 The initial database design includes the ERD and relational schema.
 
-- [Entity Relationship Diagram](docs/database/ERD.png)
-- [Relational Schema](docs/database/RS.png)
+- [Entity Relationship Diagram](database/ERD.png)
+- [Relational Schema](database/RS.png)
 
 ## Project Status
 **Status:** Database design and implementation completed; Coding not started.
