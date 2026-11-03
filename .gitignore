@@ -1,0 +1,24 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.rsuser
+
+# Build output
+[Bb]in/
+[Oo]bj/
+
+# NuGet
+*.nupkg
+packages/
+
+# User-specific files
+*.sln.docstates
+
+# Local secrets
+appsettings.Development.json
+secrets.json
+
+# OS files
+.DS_Store
+Thumbs.db
