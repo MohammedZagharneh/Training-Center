@@ -21,9 +21,7 @@ PhoneNumber NVARCHAR(50) NULL,
 RegisteredAt DATE NOT NULL CONSTRAINT DF_RegisteredAt DEFAULT(GETDATE()),
 
 CONSTRAINT PK_People PRIMARY KEY (PersonID),
-CONSTRAINT UQ_Email UNIQUE (Email),
 CONSTRAINT UQ_NationalNumber UNIQUE(NationalNumber),
-CONSTRAINT UQ_PhoneNumber UNIQUE (PhoneNumber)
 );
 
 GO
@@ -83,7 +81,7 @@ Title NVARCHAR(100) NOT NULL,
 Code NVARCHAR(100) NOT NULL,
 Price DECIMAL(10,2) NOT NULL,
 Description NVARCHAR(500) NULL,
-InstructorID INT NOT NULL
+InstructorID INT NOT NULL,
 
 CONSTRAINT PK_Courses PRIMARY KEY (CourseID),
 CONSTRAINT UQ_Code UNIQUE (Code),
@@ -104,7 +102,7 @@ EnrollmentStatus NVARCHAR(50) NOT NULL,
 
 CONSTRAINT PK_Enrollments PRIMARY KEY (EnrollmentID),
 
-CONSTRAINT CK_CompletionDate CHECK(CompletionDate > EnrollmentDate),
+CONSTRAINT CK_CompletionDate CHECK(CompletionDate IS NULL OR CompletionDate >= EnrollmentDate),
 CONSTRAINT CK_EnrollmentStatus CHECK(EnrollmentStatus IN ('Active', 'Completed', 'Dropped')),
 CONSTRAINT UQ_StudentID_CourseID UNIQUE (StudentID, CourseID),
 
@@ -130,4 +128,15 @@ GO
 
 CREATE INDEX IX_Enrollments_CourseID
 ON Enrollments(CourseID);
+GO
+
+
+CREATE UNIQUE INDEX IX_People_Email
+ON People(Email)
+WHERE Email IS NOT NULL;
+GO
+
+CREATE UNIQUE INDEX IX_People_PhoneNumber
+ON People(PhoneNumber)
+WHERE PhoneNumber IS NOT NULL;
 GO
