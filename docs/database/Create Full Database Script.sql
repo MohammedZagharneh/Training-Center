@@ -110,6 +110,20 @@ CONSTRAINT FK_Enrollments_Students FOREIGN KEY(StudentID) REFERENCES Students(St
 CONSTRAINT FK_Enrollments_Courses FOREIGN KEY(CourseID) REFERENCES Courses(CourseID)
 );
 
+
+CREATE TABLE ErrorLogs
+(
+    ErrorLogID BIGINT IDENTITY(1,1) PRIMARY KEY,
+    Message NVARCHAR(2000) NOT NULL,
+    ExceptionType NVARCHAR(500) NOT NULL,
+    StackTrace NVARCHAR(MAX) NULL,
+    RequestPath NVARCHAR(500) NULL,
+    HttpMethod NVARCHAR(10) NULL,
+    CreatedAt DATETIME2 NOT NULL DEFAULT GETDATE()
+);
+
+GO
+
 GO
 
 
