@@ -24,10 +24,10 @@ namespace Domain.Person
 
         public DateOnly RegisteredAt { get; set; }
 
-        public int? UserID { get; set; }
+        public int? UserId { get; set; }
 
-        public int? StudentID { get; set; }
+        public int? StudentId { get; set; }
 
-        public int? InstructorID { get; set; }
+        public int? InstructorId { get; set; }
     }
 }
