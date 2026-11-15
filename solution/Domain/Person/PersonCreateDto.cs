@@ -12,22 +12,22 @@ namespace Domain.Person
         //uniqueness of national number , email and phone number are handled in business layer
 
         [Required]
-        [StringLength(50)]
+        [StringLength(50, MinimumLength = 2)]
         [RegularExpression(@"^[a-zA-Z0-9]+$")]
         public string NationalNumber { get; set; } = null!;
 
         [Required]
-        [StringLength(50)]
+        [StringLength(50, MinimumLength = 1)]
         [RegularExpression(@"^[\p{L}\p{M}]+(?:[ '\-][\p{L}\p{M}]+)*$")]
         public string FirstName { get; set; } = null!;
 
         [Required]
-        [StringLength(50)]
+        [StringLength(50, MinimumLength = 1)]
         [RegularExpression(@"^[\p{L}\p{M}]+(?:[ '\-][\p{L}\p{M}]+)*$")]
         public string LastName { get; set; } = null!;
 
         [EmailAddress]
-        [StringLength(100)]
+        [StringLength(100, MinimumLength = 10)]
         public string? Email { get; set; }
 
         public DateOnly? BirthDate { get; set; }

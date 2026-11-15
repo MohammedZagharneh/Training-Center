@@ -92,26 +92,12 @@ namespace DataAccess.Repositories
             return await _context.People.FindAsync(PersonId);
         }
 
-        public async Task<bool> UpdateAsync(Person person)
+        public async Task<bool> UpdateAsync()
         {
 
             try
             { 
                 await _context.SaveChangesAsync(); 
-                return true;
-            }
-
-            catch (DbUpdateException ex) when (ex.GetBaseException() is SqlException SqlEx && SqlEx.Number is 2601 or 2627)
-            {
-                return false;
-            }
-        }
-
-        public async Task<bool> UpdateNationalNumberAsync(Person person)
-        {
-            try
-            {
-                await _context.SaveChangesAsync();
                 return true;
             }
 

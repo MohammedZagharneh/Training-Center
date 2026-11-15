@@ -20,14 +20,32 @@ namespace Business.Services
         }
 
         //fetch
-        public async Task<PersonDetailsDto?> GetByIdAsync(int personId)
+        public async Task<GetPersonDetailsResult> GetDetailsByIdAsync(int personId)
         {
-            return await _repo.GetDetailsByIdAsync(personId);
+            if (personId <= 0)
+                return new GetPersonDetailsResult(GetPersonDetailsStatus.BadRequest, null);
+
+
+            PersonDetailsDto? person = await _repo.GetDetailsByIdAsync(personId);
+
+            if(person == null)
+                return new GetPersonDetailsResult(GetPersonDetailsStatus.NotFound, null);
+
+            return new GetPersonDetailsResult(GetPersonDetailsStatus.Found, person);
         }
 
-        public async Task<PersonDetailsDto?> GetByNationalNumberAsync(string nationalNumber)
+        public async Task<GetPersonDetailsResult> GetDetailsByNationalNumberAsync(string nationalNumber)
         {
-            return await _repo.GetDetailsByNationalNumberAsync(nationalNumber);
+            if (string.IsNullOrWhiteSpace(nationalNumber) || !nationalNumber.All(char.IsLetterOrDigit))
+                return new GetPersonDetailsResult(GetPersonDetailsStatus.BadRequest, null);
+
+
+            PersonDetailsDto? person = await _repo.GetDetailsByNationalNumberAsync(nationalNumber);
+
+            if (person == null)
+                return new GetPersonDetailsResult(GetPersonDetailsStatus.NotFound, null);
+
+            return new GetPersonDetailsResult(GetPersonDetailsStatus.Found, person);
         }
 
         public async Task<IEnumerable<PersonListDto>> GetListAsync()
@@ -44,8 +62,26 @@ namespace Business.Services
 
             bool result = await _repo.AddAsync(NewPerson);
 
+
             if (result)
-                return new AddPersonResult(AddPersonStatus.Success, NewPerson.PersonId);
+            {
+                PersonDetailsDto newPersonDetails = new PersonDetailsDto
+                {
+                    PersonId = NewPerson.PersonId,
+                    NationalNumber = NewPerson.NationalNumber,
+                    FirstName = NewPerson.FirstName,
+                    LastName = NewPerson.LastName,
+                    Email = NewPerson.Email,
+                    BirthDate = NewPerson.BirthDate,
+                    PhoneNumber = NewPerson.PhoneNumber,
+                    RegisteredAt = NewPerson.RegisteredAt,
+                    UserId = null,
+                    InstructorId = null,
+                    StudentId = null
+                };
+
+                return new AddPersonResult(AddPersonStatus.Success, newPersonDetails); 
+            }
             else
                 return new AddPersonResult(AddPersonStatus.Duplicate, null);
         }
@@ -69,7 +105,7 @@ namespace Business.Services
             updatedPerson.BirthDate = person.BirthDate;
             updatedPerson.PhoneNumber = person.PhoneNumber;
 
-            bool result =  await _repo.UpdateAsync(updatedPerson);
+            bool result =  await _repo.UpdateAsync();
 
             return result ? UpdatePersonResult.Success:UpdatePersonResult.Duplicate;
         }
@@ -88,7 +124,7 @@ namespace Business.Services
 
             updatedPerson.NationalNumber = person.NationalNumber;
 
-            bool result = await _repo.UpdateAsync(updatedPerson);
+            bool result = await _repo.UpdateAsync();
 
             return result ? UpdatePersonResult.Success : UpdatePersonResult.Duplicate;
         }

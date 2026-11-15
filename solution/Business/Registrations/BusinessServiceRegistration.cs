@@ -21,6 +21,10 @@ namespace Business.Registrations
             services.AddScoped<ErrorLogRepository>();
             services.AddScoped<ErrorLogService>();
 
+            //Person
+            services.AddScoped<PersonRepository>();
+            services.AddScoped<PersonService>();
+
 
             return services;
         }

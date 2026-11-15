@@ -10,7 +10,7 @@ namespace Domain.Person
     public class PersonUpdateNationalNumberDto
     {
         [Required]
-        [StringLength(50)]
+        [StringLength(50, MinimumLength = 2)]
         [RegularExpression(@"^[a-zA-Z0-9]+$")]
         public string NationalNumber { get; set; } = null!;
     }
