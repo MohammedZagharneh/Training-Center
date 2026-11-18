@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using DataAccess.Connections;
 using Business.Services;
 using DataAccess.Repositories;
+using DataAccess.TransactionManager;
 
 
 namespace Business.Registrations
@@ -25,6 +26,12 @@ namespace Business.Registrations
             services.AddScoped<PersonRepository>();
             services.AddScoped<PersonService>();
 
+            //Student
+            services.AddScoped<StudentRepository>();
+            services.AddScoped<StudentService>();
+
+            //Transaction Manager
+            services.AddScoped<EfTransactionManager>();
 
             return services;
         }

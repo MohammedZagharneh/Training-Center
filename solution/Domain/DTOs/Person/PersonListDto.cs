@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Person
+namespace Domain.DTOs.Person
 {
-    public class PersonDetailsDto
+    public class PersonListDto
     {
         public int PersonId { get; set; }
 
@@ -23,11 +23,5 @@ namespace Domain.Person
         public string? PhoneNumber { get; set; }
 
         public DateOnly RegisteredAt { get; set; }
-
-        public int? UserId { get; set; }
-
-        public int? StudentId { get; set; }
-
-        public int? InstructorId { get; set; }
     }
 }

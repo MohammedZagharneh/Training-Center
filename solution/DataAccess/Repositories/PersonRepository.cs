@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Entities;
+using Domain.DTOs.Person;
 using Domain.Enums;
-using Domain.Person;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -61,6 +61,11 @@ namespace DataAccess.Repositories
             return await _context.People.Select( p => new PersonListDto { PersonId = p.PersonId, 
                 NationalNumber = p.NationalNumber, FirstName = p.FirstName, LastName = p.LastName, Email = p.Email, BirthDate = p.BirthDate, 
                 PhoneNumber = p.PhoneNumber, RegisteredAt = p.RegisteredAt}).ToListAsync();
+        }
+
+        public async Task<bool> IsPersonExist(int personId)
+        {
+            return await _context.People.AnyAsync(p => p.PersonId == personId);
         }
 
         //add

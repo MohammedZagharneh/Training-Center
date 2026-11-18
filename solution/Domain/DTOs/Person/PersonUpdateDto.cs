@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Person
+namespace Domain.DTOs.Person
 {
     public class PersonUpdateDto
     {

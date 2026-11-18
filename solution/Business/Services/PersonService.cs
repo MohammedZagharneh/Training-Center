@@ -6,7 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Entities;
 using Domain.Enums;
-using Domain.Person;
+using Domain.Shared;
+using Domain.DTOs.Person;
 
 namespace Business.Services
 {
@@ -23,29 +24,29 @@ namespace Business.Services
         public async Task<GetPersonDetailsResult> GetDetailsByIdAsync(int personId)
         {
             if (personId <= 0)
-                return new GetPersonDetailsResult(GetPersonDetailsStatus.BadRequest, null);
+                return new GetPersonDetailsResult(GetDetailsStatus.InvalidInput, null);
 
 
             PersonDetailsDto? person = await _repo.GetDetailsByIdAsync(personId);
 
             if(person == null)
-                return new GetPersonDetailsResult(GetPersonDetailsStatus.NotFound, null);
+                return new GetPersonDetailsResult(GetDetailsStatus.NotFound, null);
 
-            return new GetPersonDetailsResult(GetPersonDetailsStatus.Found, person);
+            return new GetPersonDetailsResult(GetDetailsStatus.Found, person);
         }
 
         public async Task<GetPersonDetailsResult> GetDetailsByNationalNumberAsync(string nationalNumber)
         {
             if (string.IsNullOrWhiteSpace(nationalNumber) || !nationalNumber.All(char.IsLetterOrDigit))
-                return new GetPersonDetailsResult(GetPersonDetailsStatus.BadRequest, null);
+                return new GetPersonDetailsResult(GetDetailsStatus.InvalidInput, null);
 
 
             PersonDetailsDto? person = await _repo.GetDetailsByNationalNumberAsync(nationalNumber);
 
             if (person == null)
-                return new GetPersonDetailsResult(GetPersonDetailsStatus.NotFound, null);
+                return new GetPersonDetailsResult(GetDetailsStatus.NotFound, null);
 
-            return new GetPersonDetailsResult(GetPersonDetailsStatus.Found, person);
+            return new GetPersonDetailsResult(GetDetailsStatus.Found, person);
         }
 
         public async Task<IEnumerable<PersonListDto>> GetListAsync()
@@ -80,7 +81,7 @@ namespace Business.Services
                     StudentId = null
                 };
 
-                return new AddPersonResult(AddPersonStatus.Success, newPersonDetails); 
+                return new AddPersonResult(AddPersonStatus.Success, newPersonDetails);
             }
             else
                 return new AddPersonResult(AddPersonStatus.Duplicate, null);
@@ -90,7 +91,7 @@ namespace Business.Services
         public async Task<UpdatePersonResult> UpdateAsync(int PersonId, PersonUpdateDto person)
         {
             if (PersonId <= 0)
-                return UpdatePersonResult.BadRequest;
+                return UpdatePersonResult.InvalidInput;
 
             Person? updatedPerson = await _repo.GetByIdAsync(PersonId);
 
@@ -113,7 +114,7 @@ namespace Business.Services
         public async Task<UpdatePersonResult> UpdateNationalNumberAsync(int PersonId, PersonUpdateNationalNumberDto person)
         {
             if (PersonId <= 0)
-                return UpdatePersonResult.BadRequest;
+                return UpdatePersonResult.InvalidInput;
 
             Person? updatedPerson = await _repo.GetByIdAsync(PersonId);
 

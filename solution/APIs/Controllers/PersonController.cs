@@ -1,9 +1,10 @@
 ﻿using Business.Services;
 using DataAccess.Entities;
 using Domain.Enums;
-using Domain.Person;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Domain.Shared;
+using Domain.DTOs.Person;
 
 namespace APIs.Controllers
 {
@@ -26,10 +27,10 @@ namespace APIs.Controllers
         {
             GetPersonDetailsResult result = await _service.GetDetailsByIdAsync(personId);
 
-            if (result.Status == GetPersonDetailsStatus.BadRequest)
+            if (result.Status == GetDetailsStatus.InvalidInput)
                 return BadRequest("Invalid ID!");
 
-            else if(result.Status == GetPersonDetailsStatus.NotFound)
+            else if(result.Status == GetDetailsStatus.NotFound)
                 return NotFound($"Person with ID = {personId} was not found!");
 
             else 
@@ -44,10 +45,10 @@ namespace APIs.Controllers
         {
             GetPersonDetailsResult result = await _service.GetDetailsByNationalNumberAsync(nationalNumber);
 
-            if (result.Status == GetPersonDetailsStatus.BadRequest)
+            if (result.Status == GetDetailsStatus.InvalidInput)
                 return BadRequest("Invalid National Number!");
 
-            else if (result.Status == GetPersonDetailsStatus.NotFound)
+            else if (result.Status == GetDetailsStatus.NotFound)
                 return NotFound($"Person with National Number = {nationalNumber} was not found!");
 
             else
@@ -96,7 +97,7 @@ namespace APIs.Controllers
             else if (result == UpdatePersonResult.NotFound)
                 return NotFound($"Person with ID = {personId} was not found!");
 
-            else if (result == UpdatePersonResult.BadRequest)
+            else if (result == UpdatePersonResult.InvalidInput)
                 return BadRequest("Invalid ID!");
 
             else
@@ -118,7 +119,7 @@ namespace APIs.Controllers
             else if (result == UpdatePersonResult.NotFound)
                 return NotFound($"Person with ID = {personId} was not found!");
 
-            else if (result == UpdatePersonResult.BadRequest)
+            else if (result == UpdatePersonResult.InvalidInput)
                 return BadRequest("Invalid ID!");
 
             else

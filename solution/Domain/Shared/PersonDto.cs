@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Person
+namespace Domain.Shared
 {
-    public class PersonListDto
+    public class PersonDto
     {
         public int PersonId { get; set; }
 
@@ -21,7 +21,5 @@ namespace Domain.Person
         public DateOnly? BirthDate { get; set; }
 
         public string? PhoneNumber { get; set; }
-
-        public DateOnly RegisteredAt { get; set; }
     }
 }
