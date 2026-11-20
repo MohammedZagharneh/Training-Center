@@ -39,9 +39,9 @@ namespace Business.Services
             return new GetInstructorDetailsResult(GetDetailsStatus.Found, instructorDto);
         }
 
-        public async Task<IEnumerable<InstructorListDto>> GetListAsync()
+        public async Task<PagedResult<InstructorListDto>> GetListAsync(int pageNumber, int pageSize)
         {
-            return await _instructorRepo.GetListAsnyc();
+            return await _instructorRepo.GetListAsync(pageNumber, pageSize);
         }
 
         public async Task<AddInstructorResult> AddAsync(InstructorCreateDto instructor)

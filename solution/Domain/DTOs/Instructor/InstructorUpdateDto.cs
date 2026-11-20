@@ -16,6 +16,7 @@ namespace Domain.DTOs.Instructor
         [Required]
         public bool IsActive { get; set; }
 
+        [Range(1, int.MaxValue)]
         public int? ManagerId { get; set; }
     }
 }

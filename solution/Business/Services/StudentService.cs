@@ -41,9 +41,9 @@ namespace Business.Services
                 return new GetStudentDetailsResult(GetDetailsStatus.Found, student);
         }
 
-        public async Task<IEnumerable<StudentListDto>> GetListAsync()
+        public async Task<PagedResult<StudentListDto>> GetListAsync(int pageNumber, int pageSize)
         { 
-            return await _studentRepo.GetListAsync();
+            return await _studentRepo.GetListAsync(pageNumber, pageSize);
         }
 
         public async Task<AddStudentResult> AddAsync(StudentCreateDto student)

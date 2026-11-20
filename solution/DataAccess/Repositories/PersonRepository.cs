@@ -8,6 +8,7 @@ using Domain.DTOs.Person;
 using Domain.Enums;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Domain.Shared;
 
 namespace DataAccess.Repositories
 {
@@ -56,12 +57,38 @@ namespace DataAccess.Repositories
             }).FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<PersonListDto>> GetListAsync()
+        public async Task<PagedResult<PersonListDto>> GetListAsync(int pageNumber, int pageSize)
         {
-            return await _context.People.Select( p => new PersonListDto { PersonId = p.PersonId, 
-                NationalNumber = p.NationalNumber, FirstName = p.FirstName, LastName = p.LastName, Email = p.Email, BirthDate = p.BirthDate, 
-                PhoneNumber = p.PhoneNumber, RegisteredAt = p.RegisteredAt}).ToListAsync();
+            var query = _context.People.AsNoTracking();
+
+            int totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderBy(p => p.PersonId)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(p => new PersonListDto
+                {
+                    PersonId = p.PersonId,
+                    NationalNumber = p.NationalNumber,
+                    FirstName = p.FirstName,
+                    LastName = p.LastName,
+                    Email = p.Email,
+                    BirthDate = p.BirthDate,
+                    PhoneNumber = p.PhoneNumber,
+                    RegisteredAt = p.RegisteredAt
+                })
+                .ToListAsync();
+
+            return new PagedResult<PersonListDto>
+            {
+                Items = items,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = totalCount
+            };
         }
+
 
         public async Task<bool> IsPersonExist(int personId)
         {

@@ -45,12 +45,21 @@ namespace DataAccess.Repositories
 
         public async Task<Instructor?> GetByIdAsync(int instructorId)
         {
-            return await _context.Instructors.FindAsync(instructorId);
+            return await _context.Instructors.Include(i => i.Person).FirstOrDefaultAsync(i => i.InstructorId == instructorId);
         }
 
-        public async Task<IEnumerable<InstructorListDto>> GetListAsnyc()
+        public async Task<bool> IsInstructorExist(int instructorId)
         {
-            return await _context.Instructors.Select(i => new InstructorListDto
+            return await _context.Instructors.AnyAsync(i => i.InstructorId == instructorId);
+        }
+
+        public async Task<PagedResult<InstructorListDto>> GetListAsync(int pageNumber, int pageSize)
+        {
+            var query = _context.Instructors.AsNoTracking();
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query.OrderBy(s => s.PersonId).Skip((pageNumber - 1) * pageSize).Take(pageSize).Select(i => new InstructorListDto
             {
                 InstructorId = i.InstructorId,
                 FirstName = i.Person.FirstName,
@@ -60,6 +69,14 @@ namespace DataAccess.Repositories
                 ManagerId = i.ManagerId
 
             }).ToListAsync();
+
+            return new PagedResult<InstructorListDto>
+            {
+                Items = items,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = totalCount
+            };
         }
 
         public async Task<AddInstructorDataAccessResult> AddAsync(Instructor instructor)

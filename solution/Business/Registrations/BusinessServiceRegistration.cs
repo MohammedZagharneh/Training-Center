@@ -34,6 +34,10 @@ namespace Business.Registrations
             services.AddScoped<InstructorRepository>();
             services.AddScoped<InstructorService>();
 
+            //Course
+            services.AddScoped<CourseRepository>();
+            services.AddScoped<CourseService>();
+
             //Transaction Manager
             services.AddScoped<EfTransactionManager>();
 

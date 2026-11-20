@@ -37,12 +37,16 @@ namespace APIs.Controllers
         }
 
         [HttpGet("all", Name = "GetInstructorsList")]
-        [ProducesResponseType(typeof(IEnumerable<InstructorListDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetListAsync()
+        [ProducesResponseType(typeof(PagedResult<InstructorListDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetListAsync([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            IEnumerable<InstructorListDto> list = await _service.GetListAsync();
+            if (pageNumber < 1 || pageSize < 1 || pageSize > 100)
+                return BadRequest("Invalid pagination parameters.");
 
-            return Ok(list);
+            var result = await _service.GetListAsync(pageNumber, pageSize);
+
+            return Ok(result);
         }
 
         [HttpPost("add", Name = "AddInstructor")]

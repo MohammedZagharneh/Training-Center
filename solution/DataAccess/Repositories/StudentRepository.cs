@@ -40,18 +40,29 @@ namespace DataAccess.Repositories
             }).FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<StudentListDto>> GetListAsync()
+        public async Task<PagedResult<StudentListDto>> GetListAsync(int pageNumber, int pageSize)
         {
-            return await _context.Students.Select(s => new StudentListDto
+            var query = _context.Students.AsNoTracking();
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query.OrderBy(s => s.PersonId).Skip((pageNumber - 1) * pageSize).Take(pageSize).Select(s => new StudentListDto
             {
                 StudentId = s.StudentId,
                 StudentStatus = s.StudentStatus,
                 PersonId = s.Person.PersonId,
-                NationalNumber = s.Person.NationalNumber,
+                NationalNumber= s.Person.NationalNumber,
                 FirstName = s.Person.FirstName,
-                LastName = s.Person.LastName,
-
+                LastName = s.Person.LastName
             }).ToListAsync();
+
+            return new PagedResult<StudentListDto>
+            {
+                Items = items,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = totalCount
+            };
         }
 
 

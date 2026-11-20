@@ -49,9 +49,10 @@ namespace Business.Services
             return new GetPersonDetailsResult(GetDetailsStatus.Found, person);
         }
 
-        public async Task<IEnumerable<PersonListDto>> GetListAsync()
+
+        public async Task<PagedResult<PersonListDto>> GetListAsync(int pageNumber, int pageSize)
         {
-            return await _repo.GetListAsync();
+            return await _repo.GetListAsync(pageNumber, pageSize);
         }
 
 
