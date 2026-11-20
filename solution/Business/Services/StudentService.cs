@@ -48,7 +48,7 @@ namespace Business.Services
 
         public async Task<AddStudentResult> AddAsync(StudentCreateDto student)
         {
-            if(student.PersonId <= 0)
+            if(student.PersonId <= 0) // this is a mistake , this validation should have been by Range attribute in DTO not here (Fix Later)
                 return new AddStudentResult(AddStudentStatus.InvalidPersonId, null);
 
             Person? person = await _personRepo.GetByIdAsync(student.PersonId);
@@ -109,11 +109,11 @@ namespace Business.Services
                     return new AddStudentWithNewPersonResult(AddStudentWithNewPersonStatus.DuplicatePersonData, null);
                 }
 
-                var studentDto = new StudentCreateDto { PersonId = NewPerson.PersonId };
+                Student newStudent = new Student { StudentStatus = "Active", PersonId = NewPerson.PersonId };
 
-                AddStudentResult studentAddResult = await AddAsync(studentDto);
+                bool result = await _studentRepo.AddAsync(newStudent);
 
-                if(studentAddResult.Status != AddStudentStatus.Success)
+                if(!result)
                 {
                     await _transactionManager.RollbackAsync();
                     throw new InvalidOperationException("Failed to add student after successfully adding person");
@@ -121,7 +121,24 @@ namespace Business.Services
 
                 await _transactionManager.CommitAsync();
 
-                return new AddStudentWithNewPersonResult(AddStudentWithNewPersonStatus.Success, studentAddResult.Student);
+                StudentDetailsDto newStudentDetails = new StudentDetailsDto
+                {
+                    StudentId = newStudent.StudentId,
+                    StudentStatus = newStudent.StudentStatus,
+
+                    PersonDetails = new PersonDto
+                    {
+                        PersonId = NewPerson.PersonId,
+                        NationalNumber = NewPerson.NationalNumber,
+                        FirstName = NewPerson.FirstName,
+                        LastName = NewPerson.LastName,
+                        Email = NewPerson.Email,
+                        BirthDate = NewPerson.BirthDate,
+                        PhoneNumber = NewPerson.PhoneNumber
+                    }
+                };
+
+                return new AddStudentWithNewPersonResult(AddStudentWithNewPersonStatus.Success, newStudentDetails);
             }
             catch
             {
