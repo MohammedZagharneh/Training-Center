@@ -59,7 +59,7 @@ namespace DataAccess.Repositories
 
             var totalCount = await query.CountAsync();
 
-            var items = await query.OrderBy(s => s.PersonId).Skip((pageNumber - 1) * pageSize).Take(pageSize).Select(i => new InstructorListDto
+            var items = await query.OrderBy(i => i.InstructorId).Skip((pageNumber - 1) * pageSize).Take(pageSize).Select(i => new InstructorListDto
             {
                 InstructorId = i.InstructorId,
                 FirstName = i.Person.FirstName,

@@ -10,6 +10,7 @@ namespace Domain.DTOs.Student
     public class StudentCreateDto
     {
         [Required]
+        [Range(1, int.MaxValue)]
         public int PersonId { get; set; }
     }
 }

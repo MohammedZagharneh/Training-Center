@@ -84,6 +84,11 @@ namespace DataAccess.Repositories
             return await _context.Courses.FindAsync(courseId);
         }
 
+        public async Task<Course?> GetByIdWithInstructorAsync(int courseId)
+        {
+            return await _context.Courses.Include(c => c.Instructor).FirstOrDefaultAsync(c => c.CourseId == courseId);
+        }
+
         public async Task<bool> AddAsync(Course course)
         {
             _context.Courses.Add(course);

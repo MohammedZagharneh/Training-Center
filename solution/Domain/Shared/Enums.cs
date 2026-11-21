@@ -15,4 +15,9 @@ namespace Domain.Shared
     {
         Deleted, NotFound, InvalidInput, ForeignKeyViolation
     }
+
+    public enum GetListStatus
+    {
+        InvalidPaginationInputs, Success
+    }
 }

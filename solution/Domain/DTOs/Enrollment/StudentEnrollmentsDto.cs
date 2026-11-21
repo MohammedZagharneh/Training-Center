@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.DTOs.Enrollment
 {
-    public class StudentEnrollmentDto
+    public class StudentEnrollmentsDto
     {
         public int EnrollmentId { get; set; }
 

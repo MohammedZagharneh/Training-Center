@@ -46,7 +46,7 @@ namespace DataAccess.Repositories
 
             var totalCount = await query.CountAsync();
 
-            var items = await query.OrderBy(s => s.PersonId).Skip((pageNumber - 1) * pageSize).Take(pageSize).Select(s => new StudentListDto
+            var items = await query.OrderBy(s => s.StudentId).Skip((pageNumber - 1) * pageSize).Take(pageSize).Select(s => new StudentListDto
             {
                 StudentId = s.StudentId,
                 StudentStatus = s.StudentStatus,
@@ -63,6 +63,21 @@ namespace DataAccess.Repositories
                 PageSize = pageSize,
                 TotalCount = totalCount
             };
+        }
+
+        public async Task<bool> IsStudentExists(int studentId)
+        {
+            return await _context.Students.AnyAsync(s => s.StudentId == studentId);
+        }
+
+        public async Task<Student?> GetByIdAsync(int studentId)
+        {
+            return await _context.Students.FindAsync(studentId);
+        }
+
+        public async Task<Student?> GetByIdWithPersonAsync(int studentId)
+        {
+            return await _context.Students.Include(s => s.Person).FirstOrDefaultAsync(s => s.StudentId == studentId);
         }
 
 
@@ -87,11 +102,6 @@ namespace DataAccess.Repositories
             {
                 return false;
             }
-        }
-
-        public async Task<Student?> GetByIdAsync(int StudentId)
-        {
-            return await _context.Students.FindAsync(StudentId);
         }
 
         public async Task<bool> DeleteAsync(Student student)

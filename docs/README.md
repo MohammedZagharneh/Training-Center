@@ -43,15 +43,16 @@ The solution follows a layered architecture:
 - Database connection configuration and dependency injection.
 - Centralized exception handling and error logging.
 - People management endpoints.
-
-### In Progress
-- user management endpoints.
-
-### Planned
-- Student and instructor management.
+- Student management endpoints.
+- instructor management endpoints.
 - Course management and instructor assignments.
 - Student enrollment management.
+
+### In Progress
+- User management.
 - Authentication and authorization.
+
+### Planned
 - API documentation and usage examples.
 
 ## Future Documentation

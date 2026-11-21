@@ -48,9 +48,6 @@ namespace Business.Services
 
         public async Task<AddStudentResult> AddAsync(StudentCreateDto student)
         {
-            if(student.PersonId <= 0) // this is a mistake , this validation should have been by Range attribute in DTO not here (Fix Later)
-                return new AddStudentResult(AddStudentStatus.InvalidPersonId, null);
-
             Person? person = await _personRepo.GetByIdAsync(student.PersonId);
 
             if(person == null)

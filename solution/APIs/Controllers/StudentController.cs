@@ -53,16 +53,12 @@ namespace APIs.Controllers
 
         [HttpPost("add", Name = "AddStudent")]
         [ProducesResponseType(typeof(StudentDetailsDto), StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(string), StatusCodes.Status409Conflict)]
 
         public async Task<IActionResult> AddAsync(StudentCreateDto student)
         {
             AddStudentResult result = await _service.AddAsync(student);
-
-            if (result.Status == AddStudentStatus.InvalidPersonId)
-                return BadRequest("Invalid Person ID!");
 
             if (result.Status == AddStudentStatus.PersonNotFound)
                 return NotFound($"Person with ID = {student.PersonId} was not found!");

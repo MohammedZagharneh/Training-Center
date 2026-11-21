@@ -15,7 +15,7 @@ namespace Domain.Enums
 
     public enum AddStudentStatus
     {
-        Success, AlreadyStudent, PersonNotFound, InvalidPersonId
+        Success, AlreadyStudent, PersonNotFound
     }
 
     public enum AddStudentWithNewPersonStatus
