@@ -20,4 +20,6 @@ namespace Domain.Enums
     {
         Success, Duplicate, NotFound, InvalidInput
     }
+
+    public record GetPeopleListResult(GetListStatus Status, PagedResult<PersonListDto>? PagedResult);
 }

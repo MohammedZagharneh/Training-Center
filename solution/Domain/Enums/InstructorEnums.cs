@@ -33,4 +33,6 @@ namespace Domain.Enums
     {
         Success, InvalidId, InstructorNotFound, ManagerNotFound, SelfManagement, CircularManagement
     }
+
+    public record GetInstructorsListResult(GetListStatus Status, PagedResult<InstructorListDto>? PagedResult);
 }

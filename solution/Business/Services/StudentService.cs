@@ -41,9 +41,14 @@ namespace Business.Services
                 return new GetStudentDetailsResult(GetDetailsStatus.Found, student);
         }
 
-        public async Task<PagedResult<StudentListDto>> GetListAsync(int pageNumber, int pageSize)
+        public async Task<GetStudentsListResult> GetListAsync(int pageNumber, int pageSize)
         { 
-            return await _studentRepo.GetListAsync(pageNumber, pageSize);
+            if(pageNumber < 1 || pageSize < 1 || pageSize > 100)
+                return new GetStudentsListResult(GetListStatus.InvalidPaginationInputs, null);
+
+            PagedResult<StudentListDto> result = await _studentRepo.GetListAsync(pageNumber, pageSize);
+
+            return new GetStudentsListResult(GetListStatus.Success, result);
         }
 
         public async Task<AddStudentResult> AddAsync(StudentCreateDto student)

@@ -28,6 +28,8 @@ namespace Domain.Enums
         Success, NotFound, InvalidInput
     }
 
+    public record GetStudentsListResult(GetListStatus Status, PagedResult<StudentListDto>? PagedResult);
+
     public record GetStudentDetailsResult(GetDetailsStatus Status, StudentDetailsDto? Student);
 
     public record AddStudentResult(AddStudentStatus Status, StudentDetailsDto? Student);

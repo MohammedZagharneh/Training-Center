@@ -50,9 +50,14 @@ namespace Business.Services
         }
 
 
-        public async Task<PagedResult<PersonListDto>> GetListAsync(int pageNumber, int pageSize)
+        public async Task<GetPeopleListResult> GetListAsync(int pageNumber, int pageSize)
         {
-            return await _repo.GetListAsync(pageNumber, pageSize);
+            if(pageNumber < 1 || pageSize < 1 || pageSize > 100)
+                return new GetPeopleListResult(GetListStatus.InvalidPaginationInputs, null);
+
+            PagedResult<PersonListDto> result = await _repo.GetListAsync(pageNumber, pageSize);
+
+            return new GetPeopleListResult(GetListStatus.Success, result);
         }
 
 

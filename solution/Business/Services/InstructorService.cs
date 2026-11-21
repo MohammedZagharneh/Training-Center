@@ -39,9 +39,14 @@ namespace Business.Services
             return new GetInstructorDetailsResult(GetDetailsStatus.Found, instructorDto);
         }
 
-        public async Task<PagedResult<InstructorListDto>> GetListAsync(int pageNumber, int pageSize)
+        public async Task<GetInstructorsListResult> GetListAsync(int pageNumber, int pageSize)
         {
-            return await _instructorRepo.GetListAsync(pageNumber, pageSize);
+            if(pageNumber < 1 || pageSize < 1 || pageSize > 100)
+                return new GetInstructorsListResult(GetListStatus.InvalidPaginationInputs, null);
+
+            PagedResult<InstructorListDto> result = await _instructorRepo.GetListAsync(pageNumber, pageSize);
+
+            return new GetInstructorsListResult(GetListStatus.Success, result);
         }
 
         public async Task<AddInstructorResult> AddAsync(InstructorCreateDto instructor)

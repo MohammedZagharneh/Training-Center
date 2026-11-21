@@ -29,4 +29,6 @@ namespace Domain.Enums
     {
         Success, InvalidCourseId, CourseNotFound,DuplicateCode, InstructorNotFound, InstructorInactive
     }
+
+    public record GetCoursesListResult(GetListStatus Status, PagedResult<CourseListDto>? PagedResult);
 }

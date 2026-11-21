@@ -42,12 +42,19 @@ namespace APIs.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetListAsync([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            if (pageNumber < 1 || pageSize < 1 || pageSize > 100)
-                return BadRequest("Invalid pagination parameters.");
+            GetStudentsListResult result = await _service.GetListAsync(pageNumber, pageSize);
 
-            var result = await _service.GetListAsync(pageNumber, pageSize);
+            switch (result.Status)
+            {
+                case GetListStatus.InvalidPaginationInputs:
+                    return BadRequest("Invalid pagination parameters!");
 
-            return Ok(result);
+                case GetListStatus.Success:
+                    return Ok(result.PagedResult);
+
+                default:
+                    return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
 
