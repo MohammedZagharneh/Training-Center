@@ -21,7 +21,7 @@ PhoneNumber NVARCHAR(50) NULL,
 RegisteredAt DATE NOT NULL CONSTRAINT DF_RegisteredAt DEFAULT(GETDATE()),
 
 CONSTRAINT PK_People PRIMARY KEY (PersonID),
-CONSTRAINT UQ_NationalNumber UNIQUE(NationalNumber),
+CONSTRAINT UQ_NationalNumber UNIQUE(NationalNumber)
 );
 
 GO
@@ -30,14 +30,34 @@ CREATE TABLE Users
 (
 UserID INT IDENTITY(1,1) NOT NULL,
 Username NVARCHAR(100) NOT NULL,
-Password NVARCHAR(100) NOT NULL,
+PasswordHash NVARCHAR(200) NOT NULL,
+IsActive BIT NOT NULL CONSTRAINT DF_Users_IsActive DEFAULT(1),
+Role NVARCHAR(50) NOT NULL,
 PersonID INT NOT NULL,
 
 CONSTRAINT PK_Users PRIMARY KEY (UserID),
 CONSTRAINT UQ_Username UNIQUE (Username),
 CONSTRAINT FK_Users_People FOREIGN KEY (PersonID) REFERENCES People(PersonID),
+CONSTRAINT CK_Users_Role CHECK(Role IN ('admin', 'user')),
 CONSTRAINT UQ_Users_PersonID UNIQUE (PersonID)
 );
+
+GO
+
+CREATE TABLE RefreshTokens
+(
+RefreshTokenID INT IDENTITY(1,1) NOT NULL,
+RefreshTokenHash NVARCHAR(200) NOT NULL,
+ExpiresAt DATETIME2 NOT NULL,
+RevokedAt DATETIME2 NULL,
+UserID INT NOT NULL,
+
+CONSTRAINT PK_RefreshTokens PRIMARY KEY (RefreshTokenID),
+CONSTRAINT CK_RefreshTokens_ExpiresAt CHECK(ExpiresAt > GETDATE()),
+CONSTRAINT FK_RefreshTokens_Users FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+
+GO
 
 CREATE TABLE Students
 (
@@ -122,7 +142,6 @@ CREATE TABLE ErrorLogs
     CreatedAt DATETIME2 NOT NULL DEFAULT GETDATE()
 );
 
-GO
 
 GO
 
@@ -153,4 +172,10 @@ GO
 CREATE UNIQUE INDEX IX_People_PhoneNumber
 ON People(PhoneNumber)
 WHERE PhoneNumber IS NOT NULL;
+
 GO
+
+CREATE INDEX IX_RefreshTokens_RefreshTokenHash
+ON RefreshTokens(RefreshTokenHash);
+GO
+

@@ -23,6 +23,8 @@ public partial class TrainingCenterContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
+    public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
+
     public virtual DbSet<ErrorLog> ErrorLogs {get;set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -133,7 +135,9 @@ public partial class TrainingCenterContext : DbContext
             entity.HasIndex(e => e.PersonId, "UQ_Users_PersonID").IsUnique();
 
             entity.Property(e => e.UserId).HasColumnName("UserID");
-            entity.Property(e => e.Password).HasMaxLength(100);
+            entity.Property(e => e.PasswordHash).HasMaxLength(200);
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.Role).HasMaxLength(50);
             entity.Property(e => e.PersonId).HasColumnName("PersonID");
             entity.Property(e => e.Username).HasMaxLength(100);
 
@@ -141,6 +145,22 @@ public partial class TrainingCenterContext : DbContext
                 .HasForeignKey<User>(d => d.PersonId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Users_People");
+        });
+
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.HasKey(e => e.RefreshTokenId);
+
+
+            entity.Property(e => e.RefreshTokenHash).HasMaxLength(200);
+            entity.Property(e => e.ExpiresAt).HasColumnName("ExpiresAt").HasColumnType("datetime2");
+            entity.Property(e => e.RevokedAt).HasColumnName("RevokedAt").HasColumnType("datetime2").IsRequired(false);
+            entity.Property(e => e.UserId).HasColumnName("UserID");
+
+            entity.HasOne(d => d.User).WithMany(p => p.RefreshTokens)
+            .HasForeignKey(d => d.UserId)
+            .OnDelete(DeleteBehavior.ClientSetNull)
+            .HasConstraintName("FK_RefreshTokens_Users");
         });
 
         modelBuilder.Entity<ErrorLog>(entity =>

@@ -45,6 +45,7 @@ namespace Business.Registrations
             //Transaction Manager
             services.AddScoped<EfTransactionManager>();
 
+
             return services;
         }
     }

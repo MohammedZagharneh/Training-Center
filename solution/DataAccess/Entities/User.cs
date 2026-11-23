@@ -9,9 +9,15 @@ public partial class User
 
     public string Username { get; set; } = null!;
 
-    public string Password { get; set; } = null!;
+    public string PasswordHash { get; set; } = null!;
+
+    public bool IsActive { get; set; }
+
+    public string Role { get; set; } = null!;
 
     public int PersonId { get; set; }
 
     public virtual Person Person { get; set; } = null!;
+
+    public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 }

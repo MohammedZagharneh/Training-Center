@@ -1,60 +1,40 @@
-CREATE PROCEDURE SP_RegisterNewPersonAsUser
-@NationalNumber NVARCHAR(50),
-@FirstName NVARCHAR(50),
-@LastName NVARCHAR(50),
-@Email NVARCHAR(100),
-@BirthDate DATE,
-@PhoneNumber NVARCHAR(50),
-@Username NVARCHAR(100),
-@PasswordHash NVARCHAR(100)
+CREATE PROCEDURE SP_GetUsersList
 AS
-
-BEGIN 
+BEGIN
     SET NOCOUNT ON;
-    SET XACT_ABORT ON;
 
-BEGIN TRY
-
-   BEGIN TRANSACTION;
-
-INSERT INTO People(NationalNumber, FirstName,LastName, Email, BirthDate, PhoneNumber)
-VALUES(@NationalNumber, @FirstName, @LastName, @Email, @BirthDate, @PhoneNumber);
-
-DECLARE @PersonID INT = SCOPE_IDENTITY();
-
-INSERT INTO Users(Username, Password, PersonID)
-VALUES(@Username, @PasswordHash, @PersonID);
-
-DECLARE @UserID INT = SCOPE_IDENTITY();
-
-   COMMIT TRANSACTION;
-
-END TRY
-
-BEGIN CATCH
-        IF @@TRANCOUNT > 0
-            ROLLBACK TRANSACTION;
-
-        THROW;
-END CATCH
-
+    SELECT
+        U.UserID,
+        U.Username,
+        U.Role,
+        U.IsActive,
+        U.PersonID,
+        P.FirstName,
+        P.LastName,
+        P.NationalNumber,
+        P.Email,
+        P.PhoneNumber
+    FROM Users U
+    INNER JOIN People P ON P.PersonID = U.PersonID
+    ORDER BY U.UserID;
 END;
-
 GO
 
 
-CREATE PROCEDURE SP_RegisterExistingPersonAsUser
-@Username NVARCHAR(100),
-@PasswordHash NVARCHAR(100),
-@PersonID INT
+--The transaction of creating a person record before making him a user is in business service
+CREATE PROCEDURE SP_Register
+@username NVARCHAR(100),
+@passwordHash NVARCHAR(200),
+@role NVARCHAR(50),
+@isActive BIT,
+@personID INT
 AS
 
 BEGIN
 SET NOCOUNT ON;
-SET XACT_ABORT ON;
 
-INSERT INTO Users(Username, Password, PersonID)
-VALUES(@Username, @PasswordHash, @PersonID);
+INSERT INTO Users(Username, PasswordHash, Role, IsActive, PersonID)
+VALUES(@username, @passwordHash, @role, @isActive, @personID);
 
 SELECT SCOPE_IDENTITY() AS UserID;
 END
@@ -62,28 +42,17 @@ END
 
 GO
 
-CREATE PROCEDURE SP_Login
+--For Login
+CREATE PROCEDURE SP_GetUserDetails
 @Username NVARCHAR(100)
 AS
 BEGIN
 
-SELECT UserID, Username, Password, PersonID FROM Users WHERE Username = @Username;
+SET NOCOUNT ON;
+
+SELECT UserID, Username, PasswordHash, Role, IsActive, PersonID FROM Users WHERE Username = @Username;
 
 END
 
 
 GO 
-
-CREATE PROCEDURE SP_UpdatePassword
-@UserID INT,
-@NewPasswordHash NVARCHAR(100)
-AS 
-BEGIN
-
-SET NOCOUNT ON;
-
-UPDATE Users SET Password = @NewPasswordHash WHERE UserID = @UserID;
-
-SELECT @@ROWCOUNT AS RowsAffected;
-
-END

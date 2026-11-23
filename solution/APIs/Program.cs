@@ -11,6 +11,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddBusinessServices(builder.Configuration);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("TrainingCenterAPIsPolicy", policy =>
+    {
+        policy.WithOrigins("https://localhost:7041","http://localhost:5206").AllowAnyHeader().AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
@@ -24,6 +32,8 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
+
+app.UseCors("TrainingCenterAPIsPolicy");
 
 app.UseAuthorization();
 
