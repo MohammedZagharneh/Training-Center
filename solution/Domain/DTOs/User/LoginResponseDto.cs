@@ -9,5 +9,7 @@ namespace Domain.DTOs.User
     public class LoginResponseDto
     {
         public string JwtToken { get; set; } = null!;
+
+        public string RefreshToken { get; set; } = null!;
     }
 }

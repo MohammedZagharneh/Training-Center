@@ -5,6 +5,7 @@ using Domain.DTOs.User;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Domain.Enums;
 
 
 namespace DataAccess.Repositories
@@ -69,7 +70,7 @@ namespace DataAccess.Repositories
 
         }
 
-        public async Task<UserDetailsDto?> GetUserDetails(string Username)
+        public async Task<UserDetailsDto?> GetUserDetailsAsync(string Username)
         {
             UserDetailsDto? user = null;
 
@@ -103,8 +104,9 @@ namespace DataAccess.Repositories
             }
         }
 
-        public async Task<int?> RegisterAsync(UserAddDto user)
+        public async Task<int?> RegisterAsync(string Username, string PasswordHash, RoleStatus Role, bool IsActive, int PersonId)
         {
+            
             var connection = (SqlConnection)_context.Database.GetDbConnection();
 
             var transaction = (SqlTransaction)_context.Database.CurrentTransaction!.GetDbTransaction();
@@ -114,11 +116,11 @@ namespace DataAccess.Repositories
                 command.CommandType = System.Data.CommandType.StoredProcedure;
                 command.Transaction = transaction;
 
-                command.Parameters.AddWithValue("@username", user.Username);
-                command.Parameters.AddWithValue("@passwordHash", user.PasswordHash);
-                command.Parameters.AddWithValue("@role", user.Role.ToString());
-                command.Parameters.AddWithValue("@isActive", user.IsActive);
-                command.Parameters.AddWithValue("@personID", user.PersonId);
+                command.Parameters.AddWithValue("@username", Username);
+                command.Parameters.AddWithValue("@passwordHash", PasswordHash);
+                command.Parameters.AddWithValue("@role", Role.ToString());
+                command.Parameters.AddWithValue("@isActive", IsActive);
+                command.Parameters.AddWithValue("@personID", PersonId);
 
                 try
                 {
@@ -154,10 +156,11 @@ namespace DataAccess.Repositories
                         {
                             RefreshTokenId = reader.GetInt32(reader.GetOrdinal("RefreshTokenID")),
                             UserId = reader.GetInt32(reader.GetOrdinal("UserID")),
+                            Username = reader.GetString(reader.GetOrdinal("Username")),
                             ExpiresAt = reader.GetDateTime(reader.GetOrdinal("ExpiresAt")),
-                            RevokedAt = reader.GetDateTime(reader.GetOrdinal("RevokedAt")),
-                            Role = reader.GetString(reader.GetOrdinal("Role")),
-                            IsActive = reader.GetBoolean(reader.GetOrdinal("IsActive"))
+                            RevokedAt = reader.IsDBNull(reader.GetOrdinal("RevokedAt")) ? null :reader.GetDateTime(reader.GetOrdinal("RevokedAt")),
+                            UserRole = reader.GetString(reader.GetOrdinal("Role")),
+                            IsActiveUser = reader.GetBoolean(reader.GetOrdinal("IsActive"))
                         };
                     }
 
@@ -175,26 +178,31 @@ namespace DataAccess.Repositories
 
                 cmd.Parameters.AddWithValue("@refreshTokenHash", refreshTokenHash);
 
+                await conn.OpenAsync();
+
                 object? result = await cmd.ExecuteScalarAsync();
 
                 return Convert.ToBoolean(result);
             }
         }
 
-        public async Task<int> AddRefreshTokenAsync(RefreshTokenCreateDto refreshToken)
+        public async Task<int?> AddRefreshTokenAsync(string RefreshTokenHash, DateTime ExpiresAt, int UserId)
         {
             using (SqlConnection conn = _factory.CreateConnection())
             using (SqlCommand cmd = new SqlCommand("SP_AddRefreshToken", conn))
             {
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
-                cmd.Parameters.AddWithValue("@refreshTokenHash", refreshToken.RefreshTokenHash);
-                cmd.Parameters.AddWithValue("@expiresAt", refreshToken.ExpiresAt);
-                cmd.Parameters.AddWithValue("@userID", refreshToken.UserId);
+                cmd.Parameters.AddWithValue("@refreshTokenHash", RefreshTokenHash);
+                cmd.Parameters.AddWithValue("@expiresAt", ExpiresAt);
+                cmd.Parameters.AddWithValue("@userID", UserId);
+
+                await conn.OpenAsync();
 
                 object? result = await cmd.ExecuteScalarAsync();
+                int newId = Convert.ToInt32(result);
 
-                return Convert.ToInt32(result); // returns zero if not added
+                return (newId == 0? null:newId);
             }
         }
 
@@ -208,10 +216,60 @@ namespace DataAccess.Repositories
                 cmd.Parameters.AddWithValue("@userID", UserId);
                 cmd.Parameters.AddWithValue("@newPasswordHash", PasswordHash);
 
+                await conn.OpenAsync();
+
                 object? result = await cmd.ExecuteScalarAsync();
 
                 return Convert.ToBoolean(result);
             }
+        }
+
+        public async Task<bool> LogoutFromAllDevicesAsync(int UserId)
+        {
+            using (SqlConnection conn = _factory.CreateConnection())
+            using (SqlCommand cmd = new SqlCommand("SP_LogoutFromAllDevices", conn))
+            {
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@userID", UserId);
+
+                await conn.OpenAsync();
+
+                object? result = await cmd.ExecuteScalarAsync();
+
+                return Convert.ToBoolean(result);
+            }
+        }
+
+        public async Task<bool> LogoutFromAllDevicesSharedConnectionAsync(int UserId)
+        {
+            var connection = (SqlConnection)_context.Database.GetDbConnection();
+
+            var transaction = (SqlTransaction)_context.Database.CurrentTransaction!.GetDbTransaction();
+
+            using (SqlCommand cmd = new SqlCommand("SP_LogoutFromAllDevices", connection))
+            {
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Transaction = transaction;
+
+                cmd.Parameters.AddWithValue("@userID", UserId);
+
+
+                object? result = await cmd.ExecuteScalarAsync();
+
+                return Convert.ToBoolean(result);
+            }
+        }
+
+
+        public async Task<User?> GetUserEntityAsync(int UserId)
+        {
+            return await _context.Users.FindAsync(UserId);
+        }
+
+        public async Task SaveUpdatesAsync()
+        {
+            await _context.SaveChangesAsync();
         }
     }
 }

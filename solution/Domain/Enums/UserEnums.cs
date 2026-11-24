@@ -23,7 +23,17 @@ namespace Domain.Enums
         Success, Unauthorized
     }
 
-    public record LoginRequestResult(LoginRequestStatus Status, string? JwtToken);
+    public enum ChangeActivityResult
+    {
+        Success, FailChangeSelfActivity, UserNotFound, UserAlreadyInRequestedState
+    }
+
+    public enum ChangeRoleResult
+    {
+        Success, FailChangeSelfRole, UserNotFound, UserAlreadyHasRole
+    }
+
+    public record LoginRequestResult(LoginRequestStatus Status, LoginResponseDto? Tokens);
 
 
     public record RegisterResult(RegisterStatus Status, int? UserId);

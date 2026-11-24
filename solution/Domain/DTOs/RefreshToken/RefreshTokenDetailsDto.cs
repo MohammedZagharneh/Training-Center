@@ -10,11 +10,14 @@ namespace Domain.DTOs.RefreshToken
     {
         public int RefreshTokenId { get; set; }
         public int UserId { get; set; }
+
+        public string Username { get; set; } = null!;
+
         public DateTime ExpiresAt { get; set; }
         public DateTime? RevokedAt { get; set; }
         
-        public bool IsActive { get; set; }
+        public bool IsActiveUser { get; set; }
 
-        public string Role { get; set; } = null!;
+        public string UserRole { get; set; } = null!;
     }
 }

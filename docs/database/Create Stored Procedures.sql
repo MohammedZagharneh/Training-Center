@@ -71,6 +71,7 @@ BEGIN
     SELECT
         RT.RefreshTokenID,
         RT.UserID,
+        U.Username,
         RT.ExpiresAt,
         RT.RevokedAt,
         U.IsActive,
@@ -119,24 +120,6 @@ BEGIN
 END
 GO
 
----------------------------------------------------------
-
---this procedure logout user from all devices , I won't use it and I put it just in case.
-
-CREATE PROCEDURE SP_Logout
-    @userID INT
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    UPDATE RefreshTokens
-    SET RevokedAt = SYSUTCDATETIME()
-    WHERE UserID = @userID
-      AND RevokedAt IS NULL;
-
-    SELECT @@ROWCOUNT AS AffectedRows;
-END
-GO
 
 ---------------------------------------------------------
 
@@ -154,3 +137,20 @@ BEGIN
     SELECT @@ROWCOUNT AS AffectedRows;
 END
 GO
+
+---------------------------------------------------------
+
+
+CREATE PROCEDURE SP_LogoutFromAllDevices
+    @userID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE RefreshTokens
+    SET RevokedAt = SYSUTCDATETIME()
+    WHERE UserID = @userID
+      AND RevokedAt IS NULL;
+
+    SELECT @@ROWCOUNT AS AffectedRows;
+END
