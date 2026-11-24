@@ -4,9 +4,11 @@ using Domain.DTOs.Course;
 using Domain.Enums;
 using Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace APIs.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("courses")]
     public class CourseController : ControllerBase

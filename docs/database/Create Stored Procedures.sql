@@ -20,6 +20,7 @@ BEGIN
 END;
 GO
 
+---------------------------------------------------------
 
 --The transaction of creating a person record before making him a user is in business service
 CREATE PROCEDURE SP_Register
@@ -42,6 +43,8 @@ END
 
 GO
 
+---------------------------------------------------------
+
 --For Login
 CREATE PROCEDURE SP_GetUserDetails
 @Username NVARCHAR(100)
@@ -56,3 +59,98 @@ END
 
 
 GO 
+
+---------------------------------------------------------
+
+CREATE PROCEDURE SP_GetRefreshTokenDetails
+    @refreshTokenHash NVARCHAR(200)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        RT.RefreshTokenID,
+        RT.UserID,
+        RT.ExpiresAt,
+        RT.RevokedAt,
+        U.IsActive,
+        U.Role
+    FROM RefreshTokens RT
+    INNER JOIN Users U ON RT.UserID = U.UserID
+    WHERE RT.RefreshTokenHash = @refreshTokenHash;
+END
+GO 
+
+---------------------------------------------------------
+
+CREATE PROCEDURE SP_RevokeRefreshToken
+    @refreshTokenHash NVARCHAR(200)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE RefreshTokens
+    SET RevokedAt = SYSUTCDATETIME()
+    WHERE RefreshTokenHash = @refreshTokenHash
+      AND RevokedAt IS NULL;
+
+    SELECT @@ROWCOUNT AS AffectedRows;
+END
+GO
+
+--AffectedRows = 1 means it was revoked. 0 means it doesn't exist or was already revoked.
+
+---------------------------------------------------------
+
+CREATE PROCEDURE SP_AddRefreshToken
+    @refreshTokenHash NVARCHAR(200),
+    @expiresAt DATETIME2,
+    @userID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO RefreshTokens
+        (RefreshTokenHash, ExpiresAt, UserID)
+    VALUES
+        (@refreshTokenHash, @expiresAt, @userID);
+
+    SELECT SCOPE_IDENTITY() AS RefreshTokenID;
+END
+GO
+
+---------------------------------------------------------
+
+--this procedure logout user from all devices , I won't use it and I put it just in case.
+
+CREATE PROCEDURE SP_Logout
+    @userID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE RefreshTokens
+    SET RevokedAt = SYSUTCDATETIME()
+    WHERE UserID = @userID
+      AND RevokedAt IS NULL;
+
+    SELECT @@ROWCOUNT AS AffectedRows;
+END
+GO
+
+---------------------------------------------------------
+
+CREATE PROCEDURE SP_ChangePassword
+    @userID INT,
+    @newPasswordHash NVARCHAR(200)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE Users
+    SET PasswordHash = @newPasswordHash
+    WHERE UserID = @userID;
+
+    SELECT @@ROWCOUNT AS AffectedRows;
+END
+GO

@@ -1,13 +1,15 @@
 ﻿using Business.Services;
 using DataAccess.Entities;
+using Domain.DTOs.Person;
 using Domain.Enums;
+using Domain.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Domain.Shared;
-using Domain.DTOs.Person;
 
 namespace APIs.Controllers
 {
+    [Authorize]
     [Route("people")]
     [ApiController]
     public class PersonController : ControllerBase

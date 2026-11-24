@@ -42,9 +42,12 @@ namespace Business.Registrations
             services.AddScoped<EnrollmentRepository>();
             services.AddScoped<EnrollmentService>();
 
+            //User
+            services.AddScoped<AuthRepository>();
+            services.AddScoped<AuthService>();
+
             //Transaction Manager
             services.AddScoped<EfTransactionManager>();
-
 
             return services;
         }

@@ -1,13 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Business.Services;
+﻿using Business.Services;
+using Domain.DTOs.Person;
 using Domain.DTOs.Student;
 using Domain.Enums;
 using Domain.Shared;
-using Domain.DTOs.Person;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace APIs.Controllers
 {
+    [Authorize]
     [Route("students")]
     [ApiController]
     public class StudentController : ControllerBase

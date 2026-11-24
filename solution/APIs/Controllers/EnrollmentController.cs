@@ -2,10 +2,13 @@
 using Domain.DTOs.Enrollment;
 using Domain.Enums;
 using Domain.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace APIs.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("enrollments")]
     public class EnrollmentController : ControllerBase

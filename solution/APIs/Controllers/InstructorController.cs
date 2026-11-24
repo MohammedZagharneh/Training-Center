@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Business.Services;
+﻿using Business.Services;
 using Domain.DTOs.Instructor;
-using Domain.Shared;
 using Domain.Enums;
+using Domain.Shared;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace APIs.Controllers
 {
+    [Authorize]
     [Route("instructors")]
     [ApiController]
     public class InstructorController : ControllerBase
